@@ -5,3 +5,8 @@ export interface User {
     email:  string;
     gender: string;
 }
+
+export interface Prediction {
+  disease: string;
+  probability: number;
+}

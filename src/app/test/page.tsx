@@ -3,6 +3,7 @@
 import { useState } from "react"
 import toast, { Toaster } from "react-hot-toast"
 import axios from "axios"
+import { useRouter } from "next/navigation";
 
 interface PredictionResponse {
     success: boolean;
@@ -11,6 +12,7 @@ interface PredictionResponse {
 }
 
 export default function Test() {
+    const router = useRouter()
     const [blockno, setBlockNum] = useState(0)
     const category = [
         null, ['breathlessness', 'cough', 'chest_pain', 'continuous_sneezing', 'patches_in_throat', 'high_fever', 'cold_hands_and_feets', 'shivering'],
@@ -23,26 +25,34 @@ export default function Test() {
         ['weight_gain', 'weight_loss', 'yellowish_skin', 'obesity', 'ulcers_on_tongue', 'sweating', 'weakness_in_limbs']
     ]
 
-
+    const [loading, setLoading] = useState(false)
     const [selectedSymptom, setSelectedSymptoms] = useState<String[]>([])
-    const [predictions, setPredictions] = useState<{ disease: string; probability: number }[]>([])
     const symptomSubmit = async () => {
-  try {
-    const { data } = await axios.post<PredictionResponse>("/api/diseaseModel", {
-      symptoms: selectedSymptom,
-    })
-    console.log("📥 Backend response:", data)
+        try {
+            setLoading(true)
+            const { data } = await axios.post<PredictionResponse>("/api/diseaseModel", {
+                symptoms: selectedSymptom,
+            })
+            console.log("Backend response:", data)
 
-    if (data.success) {
-      setPredictions(data.predictions)
-      console.log("✅ Predictions set:", data.predictions)
-    } else {
-      console.warn("⚠️ Backend returned failure:", data)
+            if (data.success) {
+                setLoading(false)
+                router.push(
+                    `/prescription?predictions=${encodeURIComponent(JSON.stringify(data.predictions))}`
+                )
+                console.log("Predictions set:", data.predictions)
+            } else {
+                console.warn("Backend returned failure:", data)
+            }
+        } catch (error) {
+            toast.error("Error while sending symptoms from front")
+            setLoading(false)
+            console.error("Error while sending symptoms from front", error)
+        } finally {
+            setLoading(false)
+            setSelectedSymptoms([])
+        }
     }
-  } catch (error) {
-    console.error("❌ Error while sending symptoms from front", error)
-  }
-}
     return (
         <div className="relative flex flex-col justify-center items-center min-h-screen w-screen bg-gradient-to-b from-purple-500/40 to-black">
             <div className={`absolute bg-black/30 inset-0 z-50 backdrop-blur-md space-x-1 ${blockno === 0 && `hidden`}`}>
@@ -82,9 +92,15 @@ export default function Test() {
             <p className="mt-25 mb-2 font-serif text-2xl tracking-widest">SELECT YOUR SYMPTOMS</p>
             <button
                 onClick={symptomSubmit}
-                className="mb-10 px-6 py-3 bg-gradient-to-b from-purple-900/50 to-purple-950/50 
+                className="mb-5 px-6 py-3 bg-gradient-to-b from-purple-900/50 to-purple-950/50 
                  rounded-xl hover:-translate-y-1 font-serif tracking-widest text-white 
                  shadow-md hover:shadow-lg transition-all duration-300">SUBMIT</button>
+            {
+                loading && <div className="flex space-x-4">
+                    <div className="mb-5 h-8 w-8 border-4 border-t-transparent rounded-full animate-spin"></div>
+                    <p className="font-bold text-xl">Loading</p>
+                </div>
+            }
             <div className="rounded-lg px-5 py-5 bg-black/30 grid grid-cols-2 gap-3">
                 <div
                     onClick={() => setBlockNum(1)}
@@ -141,19 +157,6 @@ export default function Test() {
                     <div className="text-3xl">🧍</div>
                     <div className="text-xl">General / Metabolic</div>
                 </div>
-            </div>
-            <div>
-                {predictions.length > 0 && (
-                    <div className="mt-10 bg-white/10 p-5 rounded-xl w-1/2 md:w-1/3 shadow-lg">
-                        <h2 className="text-xl mb-3 font-semibold">Top Predictions:</h2>
-                        {predictions.map((p, i) => (
-                            <div key={i} className="flex justify-between py-2 border-b border-white/20">
-                                <span>{p.disease}</span>
-                                <span>{p.probability}%</span>
-                            </div>
-                        ))}
-                    </div>
-                )}
             </div>
             <Toaster position="bottom-right" />
         </div>

@@ -4,7 +4,7 @@ import { NextRequest, NextResponse } from "next/server"
 export async function POST(request: NextRequest) {
   try {
     const { symptoms } = await request.json()
-    console.log("✅ Received symptoms from frontend:", symptoms)
+    console.log("Received symptoms from frontend:", symptoms)
 
     if (!symptoms || symptoms.length === 0) {
       return NextResponse.json(
@@ -15,23 +15,23 @@ export async function POST(request: NextRequest) {
 
     return new Promise((resolve) => {
       const py = spawn("python", ["src/pythonModel/predict.py"])
-      console.log("🚀 Python process started...")
+      console.log("Python process started...")
 
       let output = ""
       let error = ""
 
       py.stdout.on("data", (data) => {
-        console.log("📤 Python output chunk:", data.toString())
+        console.log("Python output chunk:", data.toString())
         output += data.toString()
       })
 
       py.stderr.on("data", (data) => {
-        console.error("❌ Python error output:", data.toString())
+        console.error("Python error output:", data.toString())
         error += data.toString()
       })
 
       py.on("close", (code) => {
-        console.log("🧩 Python process exited with code:", code)
+        console.log("Python process exited with code:", code)
         if (code !== 0) {
           console.error("Python failed:", error)
           resolve(
@@ -52,7 +52,7 @@ export async function POST(request: NextRequest) {
               })
             )
           } catch (err) {
-            console.error("⚠️ Error parsing Python output:", output)
+            console.error("Error parsing Python output:", output)
             resolve(
               NextResponse.json({
                 success: false,
@@ -68,7 +68,7 @@ export async function POST(request: NextRequest) {
       py.stdin.end()
     })
   } catch (error) {
-    console.error("🔥 Internal Server Error", error)
+    console.error("Internal Server Error", error)
     return NextResponse.json(
       {
         success: false,

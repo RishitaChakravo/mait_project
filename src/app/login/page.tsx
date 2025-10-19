@@ -1,8 +1,14 @@
 "use client"
 
+import { useState } from "react"
 import { Toaster } from "react-hot-toast"
 
 export default function Login() {
+    const [userInfo, setUserInfo] = useState<{email:string; password:string}>({
+        email: "",
+        password: ""
+    })
+
     return (
         <div className="flex flex-col justify-center items-center h-screen w-screen bg-gradient-to-t from-blue-900 to-black">
             <p className="my-5 font-bold text-3xl tracking-widest">LOGIN</p>
@@ -20,6 +26,8 @@ export default function Login() {
                     <input
                         type="email"
                         placeholder="Enter your email"
+                        value={userInfo.email}
+                        onChange={(e) => setUserInfo({...userInfo, email: e.target.value})}
                         className="bg-black/30 rounded-lg w-full px-2 py-1"
                     />
                 </div>
@@ -28,6 +36,8 @@ export default function Login() {
                     <label>Password</label>
                     <input
                         type="password"
+                        value={userInfo.password}
+                        onChange={(e) => setUserInfo({...userInfo, email: e.target.value})}
                         placeholder="Enter your password"
                         className="bg-black/30 rounded-lg w-full px-2 py-1"
                     />

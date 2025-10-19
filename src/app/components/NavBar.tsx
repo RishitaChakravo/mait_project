@@ -1,6 +1,16 @@
+"use client"
+import axios from "axios";
 import Link from "next/link";
 
 export default function NavBar() {
+    const logout = async() => {
+        try {
+            const response = axios.post('/api/logout', {withCredentials:true})
+            console.log(response)
+        } catch (error) {
+            console.log("Error while logging out: ",error)         
+        }
+    }
     return (<div className="fixed border flex justify-between z-50 w-[70%] shadow-black shadow-2xl bg-white px-4 py-2 left-1/2 -translate-x-1/2 rounded-4xl top-10 items-center">
         {/* <p className="text-2xl font-bold tracking-wide text-blue-600">MedWin</p> */}
         <p className="text-2xl font-bold text-transparent bg-clip-text bg-gradient-to-r from-purple-500 to-blue-400">
@@ -17,6 +27,9 @@ export default function NavBar() {
                 Login
             </button>
             </Link>
+            <button onClick={logout}>
+                Logout
+            </button>
         </div>
     </div>)
 }
