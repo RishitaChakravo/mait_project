@@ -5,7 +5,7 @@ const prescriptionSchema = new Schema({
         type: [String],
         required: true
     },
-    diseases:{
+    disease:{
         type: [String],
         required: true
     },

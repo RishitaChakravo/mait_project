@@ -3,7 +3,7 @@ import { useSearchParams } from "next/navigation";
 import axios from "axios";
 import { Prediction } from "../components/interface";
 
-export default function ResultsPage() {
+export default function PrescriptionPage() {
     const searchParams = useSearchParams();
     const predictionsParam = searchParams.get("predictions");
     const symptomsParam = searchParams.get("symptoms");
@@ -12,7 +12,7 @@ export default function ResultsPage() {
 
     const disease = predictions.map((p) => p.disease)
     const create_prescription = async () => {
-        const response = await axios.post('/api/prescription', {
+        const response = await axios.post('/api/createPres', {
             symptoms: symptoms,
             disease: disease
         })
