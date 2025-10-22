@@ -1,14 +1,36 @@
 "use client"
 
+import axios from "axios";
+import { useRouter } from "next/navigation";
 import { useState } from "react"
-import { Toaster } from "react-hot-toast"
+import toast, { Toaster } from "react-hot-toast"
 
 export default function Login() {
-    const [userInfo, setUserInfo] = useState<{email:string; password:string}>({
+    const router = useRouter()
+    const [userInfo, setUserInfo] = useState<{ email: string; password: string }>({
         email: "",
         password: ""
     })
 
+    const login = async () => {
+        try {
+            const response = await axios.post('/api/login', {
+                email: userInfo.email,
+                password: userInfo.password
+            })
+            toast.success("logged in")
+            console.log(response)
+        } catch (error) {
+            console.log(error)
+            toast.error("Couldnt login")
+        } finally {
+            setUserInfo({
+                email: "",
+                password: ""
+            })
+            router.push('/')
+        }
+    }
     return (
         <div className="flex flex-col justify-center items-center h-screen w-screen bg-gradient-to-t from-blue-900 to-black">
             <p className="my-5 font-bold text-3xl tracking-widest">LOGIN</p>
@@ -27,7 +49,7 @@ export default function Login() {
                         type="email"
                         placeholder="Enter your email"
                         value={userInfo.email}
-                        onChange={(e) => setUserInfo({...userInfo, email: e.target.value})}
+                        onChange={(e) => setUserInfo({ ...userInfo, email: e.target.value })}
                         className="bg-black/30 rounded-lg w-full px-2 py-1"
                     />
                 </div>
@@ -37,7 +59,7 @@ export default function Login() {
                     <input
                         type="password"
                         value={userInfo.password}
-                        onChange={(e) => setUserInfo({...userInfo, email: e.target.value})}
+                        onChange={(e) => setUserInfo({ ...userInfo, password: e.target.value })}
                         placeholder="Enter your password"
                         className="bg-black/30 rounded-lg w-full px-2 py-1"
                     />
@@ -49,6 +71,7 @@ export default function Login() {
                         hover:cursor-pointer transition-all duration-500 transform
                         hover:-translate-y-2 hover:scale-105 hover:bg-blue-600
                         shadow-md shadow-black/60 hover:shadow-blue-500/40"
+                        onClick={login}
                     >
                         Login
                     </button>

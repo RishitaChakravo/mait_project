@@ -8,10 +8,11 @@ export async function POST(request: NextRequest) {
     await dbConnect();
     const token = request.cookies.get('token')?.value
     if(!token) {
-        return NextResponse.json({status: 400})
+      return NextResponse.json({status: 400})
     }
 
     const userId = await getDatafromToken(token)
+    console.log(userId)
     const user = await User.findById(userId)
     if(!user) {
         return NextResponse.json({message: "Invalid token"}, {status:400})
@@ -26,7 +27,7 @@ export async function POST(request: NextRequest) {
         message:"Logged out successfully"
     })
 
-    response.cookies.set(token, "", {
+    response.cookies.set("token", "", {
         httpOnly: true,
         expires:new Date(0)
     })

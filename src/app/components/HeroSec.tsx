@@ -5,7 +5,7 @@ import React from "react";
 import { AuroraBackground } from "./ui/aurora-background";
 import Link from "next/link";
 
-export function HeroSec() {
+export function HeroSec({loggedIn}: { loggedIn: boolean }) {
   return (
     <AuroraBackground>
       <motion.div
@@ -30,6 +30,15 @@ export function HeroSec() {
           </button>
         </Link>
       </motion.div>
+      {
+          loggedIn && <div className="z-50 fixed top-11 right-5 h-11 w-11 rounded-full border overflow-hidden cursor-pointer">
+            <img
+              src="/image.png" 
+              alt="Profile"
+              className="h-full w-full object-cover"
+            />
+          </div>
+      }
     </AuroraBackground>
   );
 }

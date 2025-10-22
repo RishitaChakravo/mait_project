@@ -1,4 +1,4 @@
-import jwt from 'jsonwebtoken'
+import jwt, {JwtPayload} from 'jsonwebtoken'
 
 export default async function getDatafromToken(token: string){
     try {
@@ -8,7 +8,10 @@ export default async function getDatafromToken(token: string){
         }
 
         const decodedToken = jwt.verify(token, process.env.TOKEN_SECRET!)
-        return decodedToken
+        if (typeof decodedToken === "string") {
+            return null;
+        }
+        return (decodedToken as JwtPayload).id
     } catch (error) {
         console.error("Couldn't get data from token", error)
     }
